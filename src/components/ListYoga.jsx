@@ -2,17 +2,14 @@ import { ScrollView, View, StyleSheet, Text } from "react-native";
 import { colors } from "../../assets/theme";
 import ScrollLatihan from "./ScrollLatihan";
 import KartuKecil from "./KartuKecil";
-import { RoutineList } from "../data/routines"; // Pastikan path ini sesuai dengan file data Anda
+import { RoutineList } from "../data/routines"; 
 
 export default function ListYoga({ styles: parentStyles }) {
-  // Membagi data: 3 data pertama ke atas, sisanya ke bawah
   const horizontalData = RoutineList.slice(0, 3);
   const verticalData = RoutineList.slice(3);
 
   return (
-    <ScrollView>
-      <View style={parentStyles.listBlog}>
-        
+    <ScrollView showsVerticalScrollIndicator={false}>
         {/* --- KELAS UNGGULAN (HORIZONTAL SCROLL) --- */}
         <ScrollLatihan data={horizontalData} />
 
@@ -25,8 +22,6 @@ export default function ListYoga({ styles: parentStyles }) {
           ))}
           
         </View>
-
-      </View>
     </ScrollView>
   );
 }

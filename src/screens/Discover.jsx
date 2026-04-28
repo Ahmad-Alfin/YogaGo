@@ -1,18 +1,16 @@
-import React, { useState } from "react"; // Tambahkan import useState
+import React, { useState } from "react"; 
 import { StyleSheet, Text, View, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Search } from "lucide-react-native";
-// Pastikan path import ini sesuai dengan project Anda
+import { colors } from "../../assets/theme";
 import KartuKecil from "../components/KartuKecil"; 
 import { RoutineList } from "../data/routines"; 
 
 const Discover = () => {
-  // 1. Buat state untuk menyimpan teks yang diketik user
+
   const [searchQuery, setSearchQuery] = useState("");
-
-
   const filteredClasses = RoutineList.filter((item) => {
-    // Kita ubah semua teks jadi huruf kecil (toLowerCase) agar pencarian tidak sensitif huruf besar/kecil
+
     return item.title.toLowerCase().includes(searchQuery.toLowerCase());
   });
 

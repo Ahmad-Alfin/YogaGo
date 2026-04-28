@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { Heart } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-// Tambahkan 2 baris import ini:
 import KartuKecil from "../components/KartuKecil";
 import { RoutineList } from "../data/routines";
+import { colors } from "../../assets/theme";
 
 const Bookmark = () => {
-  // Ambil 2 data pertama saja sebagai contoh list yang di-bookmark
+
   const bookmarkedClasses = RoutineList.slice(0, 2); 
 
   return (
