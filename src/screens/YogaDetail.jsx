@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React from "react";
+import React, { useRef } from "react";
 import { ArrowLeft, Share2, MoreVertical, Clock, Flame } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { RoutineList } from "../data/routines"; 
@@ -12,11 +12,24 @@ const YogaDetail = ({ route }) => {
   const selectedYoga = RoutineList.find((item) => item.id === yogaId);
   const navigation = useNavigation();
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const diffClampY = Animated.diffClamp(scrollY, 0, 52);
+  const headerY = diffClampY.interpolate({
+    inputRange: [0, 52],
+    outputRange: [0, -52],
+  });
+  const bottomBarY = diffClampY.interpolate({
+    inputRange: [0, 52],
+    outputRange: [0, 100], 
+  });
+
   if (!selectedYoga) return null;
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      
+      <Animated.View style={[styles.header, { transform: [{ translateY: headerY }] }]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft color="#333" size={24} />
         </TouchableOpacity>
@@ -24,9 +37,17 @@ const YogaDetail = ({ route }) => {
           <Share2 color="#333" size={24} />
           <MoreVertical color="#333" size={24} />
         </View>
-      </View>
+      </Animated.View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+      <Animated.ScrollView 
+        showsVerticalScrollIndicator={false} 
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+
+        contentContainerStyle={{ paddingTop: 52, paddingBottom: 100 }}
+      >
         <Image style={styles.image} source={{ uri: selectedYoga.image }} contentFit="cover" />
         <View style={styles.contentPadding}>
           <Text style={styles.category}>{selectedYoga.category}</Text>
@@ -47,11 +68,14 @@ const YogaDetail = ({ route }) => {
             Latihan {selectedYoga.title} ini dirancang khusus untuk meningkatkan ketenangan pikiran dan fleksibilitas tubuh Anda secara maksimal.
           </Text>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
-      <TouchableOpacity style={styles.buttonStart}>
-        <Text style={styles.buttonText}>Start Workout</Text>
-      </TouchableOpacity>
+      <Animated.View style={[styles.bottomBar, { transform: [{ translateY: bottomBarY }] }]}>
+        <TouchableOpacity style={styles.buttonStart}>
+          <Text style={styles.buttonText}>Start Workout</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
     </SafeAreaView>
   );
 };
@@ -60,7 +84,20 @@ export default YogaDetail;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFF" },
-  header: { paddingHorizontal: 24, justifyContent: "space-between", flexDirection: "row", alignItems: "center", height: 52 },
+  
+  header: { 
+    paddingHorizontal: 24, 
+    justifyContent: "space-between", 
+    flexDirection: "row", 
+    alignItems: "center", 
+    height: 52,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: "#FFF" 
+  },
   image: { height: 250, width: "100%", borderRadius: 15 },
   contentPadding: { padding: 24 },
   category: { color: "#4A7A64", fontFamily: "Pjs-SemiBold", fontSize: 12 },
@@ -69,6 +106,19 @@ const styles = StyleSheet.create({
   infoItem: { flexDirection: "row", alignItems: "center", gap: 5 },
   infoText: { fontFamily: "Pjs-Medium", color: "#666" },
   description: { marginTop: 20, lineHeight: 22, color: "#444", fontFamily: "Pjs-Medium" },
-  buttonStart: { position: "absolute", bottom: 30, left: 24, right: 24, backgroundColor: "#4A7A64", padding: 18, borderRadius: 15, alignItems: "center" },
+  
+  bottomBar: {
+    position: "absolute", 
+    bottom: 30, 
+    left: 24, 
+    right: 24, 
+    zIndex: 1000
+  },
+  buttonStart: { 
+    backgroundColor: "#4A7A64", 
+    padding: 18, 
+    borderRadius: 15, 
+    alignItems: "center" 
+  },
   buttonText: { color: "#FFF", fontFamily: "Pjs-Bold", fontSize: 16 }
 });

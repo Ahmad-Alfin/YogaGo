@@ -18,7 +18,7 @@ const Bookmark = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ paddingHorizontal: 24, gap: 15, paddingVertical: 15 }}>
           
-          {/* Ini adalah hasil mapping list yang di-bookmark */}
+
           {bookmarkedClasses.map((item, index) => (
             <KartuKecil item={item} key={index} />
           ))}
