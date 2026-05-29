@@ -1,24 +1,64 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../assets/theme";
+// Menambahkan import Bell dan User dari lucide-react-native
+import { Edit, Bell, User } from "lucide-react-native";
+import { useNavigation } from "@react-navigation/native";
 
-// Memanggil komponen ListYoga yang sudah kamu perbaiki tadi
+// Pastikan lokasi import komponen ini sesuai dengan struktur folder Anda
 import ListYoga from "../components/ListYoga";
 
 export default function Home() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       
-      {/* --- Bagian Header Sederhana --- */}
+      {/* --- Bagian Header --- */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>Good Morning!</Text>
-        <Text style={styles.subtitle}>Ready for your yoga today?</Text>
+        {/* Sisi Kiri: Teks Ucapan Selamat */}
+        <View style={styles.headerLeft}>
+          <Text style={styles.greeting}>Good Morning!</Text>
+          <Text style={styles.subtitle}>Ready for your yoga today?</Text>
+        </View>
+
+        {/* REQ: Sisi Kanan: Icon Notifikasi dan Profil */}
+        <View style={styles.headerRight}>
+          {/* Tombol Notifikasi */}
+          <TouchableOpacity 
+            onPress={() => alert("Fitur Notifikasi dalam pengembangan")} 
+            style={styles.iconButton}
+          >
+            <Bell color={colors.black ? colors.black() : "#000000"} size={24} />
+          </TouchableOpacity>
+          
+          {/* Tombol Profil (Navigasi ke screen Profile) */}
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("Profile")} 
+            style={styles.iconButton}
+          >
+            <User color={colors.black ? colors.black() : "#000000"} size={24} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* --- Bagian Konten Utama --- */}
-      {/* ListYoga ini sudah otomatis menampilkan ScrollLatihan dan KartuKecil */}
       <ListYoga />
+      
+      {/* --- Floating Button untuk Add Blog --- */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.floatingButton,
+          {
+            opacity: pressed ? 0.8 : 1,
+            transform: [{ scale: pressed ? 0.95 : 1 }],
+          },
+        ]}
+        onPress={() => navigation.navigate("AddBlog")} // Sesuaikan dengan nama route form Anda
+      >
+        <Edit color={colors.white ? colors.white() : "#FFFFFF"} size={20} />
+      </Pressable>
       
     </SafeAreaView>
   );
@@ -33,6 +73,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 15,
+    flexDirection: "row", // Menyusun teks dan tombol secara horizontal
+    justifyContent: "space-between", // Memisahkan teks di kiri dan icon di kanan
+    alignItems: "center", // Meratakan posisi vertikal agar sejajar
+  },
+  headerLeft: {
+    flex: 1, // Agar teks mengambil ruang yang tersedia dan tidak menabrak icon
+  },
+  headerRight: {
+    flexDirection: "row", // Menyusun icon Bell dan User berdampingan
+    alignItems: "center",
+    gap: 16, // Jarak antar icon
+  },
+  iconButton: {
+    padding: 4,
   },
   greeting: {
     fontFamily: "Pjs-Bold",
@@ -44,5 +98,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.grey ? colors.grey(0.8) : "#666666",
     marginTop: 5,
-  }
+  },
+  floatingButton: {
+    backgroundColor: "#4A7A64", // Warna aksen hijau YogaGo
+    padding: 15,
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    borderRadius: 15,
+    shadowColor: "#4A7A64",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
 });

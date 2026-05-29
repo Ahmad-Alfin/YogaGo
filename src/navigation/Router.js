@@ -8,6 +8,11 @@ import Discover from "../screens/Discover";
 import Bookmark from "../screens/Bookmark";
 import Notification from "../screens/Notification";
 import YogaDetail from "../screens/YogaDetail";
+import AddBlogForm from "../screens/AddBlogForm";
+import Profile from "../screens/Profile"; 
+
+// --- 1. TAMBAHKAN IMPORT EDITCLASSFORM DI SINI ---
+import EditClassForm from "../screens/EditClassForm"; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -38,6 +43,46 @@ const Router = () => {
         headerShown: false,
         ...TransitionPresets.SlideFromRightIOS 
       }} />
+      
+      {/* Menggunakan name="AddBlog" untuk form tambah blog */}
+      <Stack.Screen
+        name="AddBlog"
+        component={AddBlogForm}
+        options={{
+          headerShown: false, 
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+
+      {/* --- 2. TAMBAHKAN STACK.SCREEN UNTUK EDITCLASSFORM DI SINI --- */}
+      <Stack.Screen
+        name="EditClassForm"
+        component={EditClassForm}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+
     </Stack.Navigator>
   );
 };

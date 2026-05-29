@@ -5,6 +5,7 @@ import { Search } from "lucide-react-native";
 import { colors } from "../../assets/theme";
 import KartuKecil from "../components/KartuKecil"; 
 import { RoutineList } from "../data/routines";
+import {useNavigation} from '@react-navigation/native';
 
 const Discover = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -14,7 +15,7 @@ const Discover = () => {
   outputRange: [0, -70],
   extrapolate: 'clamp',
 });
-  
+  const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const filteredClasses = RoutineList.filter((item) => {
 
