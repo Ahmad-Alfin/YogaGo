@@ -11,7 +11,6 @@ import YogaDetail from "../screens/YogaDetail";
 import AddBlogForm from "../screens/AddBlogForm";
 import Profile from "../screens/Profile"; 
 
-// --- 1. TAMBAHKAN IMPORT EDITCLASSFORM DI SINI ---
 import EditClassForm from "../screens/EditClassForm"; 
 
 const Tab = createBottomTabNavigator();
