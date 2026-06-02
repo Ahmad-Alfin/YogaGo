@@ -2,11 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View, Pressable, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../assets/theme";
-// Menambahkan import Bell dan User dari lucide-react-native
 import { Edit, Bell, User } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 
-// Pastikan lokasi import komponen ini sesuai dengan struktur folder Anda
+// Komponen daftar yoga Anda
 import ListYoga from "../components/ListYoga";
 
 export default function Home() {
@@ -23,7 +22,7 @@ export default function Home() {
           <Text style={styles.subtitle}>Ready for your yoga today?</Text>
         </View>
 
-        {/* REQ: Sisi Kanan: Icon Notifikasi dan Profil */}
+        {/* Sisi Kanan: Icon Notifikasi dan Profil */}
         <View style={styles.headerRight}>
           {/* Tombol Notifikasi */}
           <TouchableOpacity 
@@ -44,7 +43,10 @@ export default function Home() {
       </View>
 
       {/* --- Bagian Konten Utama --- */}
-      <ListYoga />
+      {/* Meneruskan objek 'navigation' sebagai properti (prop) ke ListYoga.
+        Ini memastikan ListYoga bisa memicu navigasi .navigate() dengan aman.
+      */}
+      <ListYoga navigation={navigation} />
       
       {/* --- Floating Button untuk Add Blog --- */}
       <Pressable
@@ -55,7 +57,7 @@ export default function Home() {
             transform: [{ scale: pressed ? 0.95 : 1 }],
           },
         ]}
-        onPress={() => navigation.navigate("AddBlog")} // Sesuaikan dengan nama route form Anda
+        onPress={() => navigation.navigate("AddBlog")} 
       >
         <Edit color={colors.white ? colors.white() : "#FFFFFF"} size={20} />
       </Pressable>
@@ -71,19 +73,19 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 15,
-    flexDirection: "row", // Menyusun teks dan tombol secara horizontal
-    justifyContent: "space-between", // Memisahkan teks di kiri dan icon di kanan
-    alignItems: "center", // Meratakan posisi vertikal agar sejajar
+    pt: 20,
+    pb: 15,
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center", 
   },
   headerLeft: {
-    flex: 1, // Agar teks mengambil ruang yang tersedia dan tidak menabrak icon
+    flex: 1, 
   },
   headerRight: {
-    flexDirection: "row", // Menyusun icon Bell dan User berdampingan
+    flexDirection: "row", 
     alignItems: "center",
-    gap: 16, // Jarak antar icon
+    gap: 16, 
   },
   iconButton: {
     padding: 4,
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   floatingButton: {
-    backgroundColor: "#4A7A64", // Warna aksen hijau YogaGo
+    backgroundColor: "#4A7A64", 
     padding: 15,
     position: 'absolute',
     bottom: 24,

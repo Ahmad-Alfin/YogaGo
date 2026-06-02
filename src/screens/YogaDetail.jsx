@@ -1,16 +1,19 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useRef } from "react";
-import { ArrowLeft, Share2, MoreVertical, Clock, Flame } from "lucide-react-native";
+// Mengimpor icon Trash2 untuk melambangkan fungsi DELETE
+import { ArrowLeft, Share2, Trash2, Edit, Clock, Flame } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
-import { RoutineList } from "../data/routines"; 
 import { Image } from "expo-image";
 import { colors } from "../../assets/theme";
+// Import client Supabase
+import { supabase } from "../../supabaseClient";
 
 const YogaDetail = ({ route }) => {
-  const { yogaId } = route.params;
-  const selectedYoga = RoutineList.find((item) => item.id === yogaId);
   const navigation = useNavigation();
+  
+  // Menangkap objek data dinamis 'yogaClass' yang dikirim dari halaman Profile
+  const selectedYoga = route.params?.yogaClass || {};
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -24,7 +27,44 @@ const YogaDetail = ({ route }) => {
     outputRange: [0, 100], 
   });
 
-  if (!selectedYoga) return null;
+  // FUNGSI SUPABASE (DELETE): Menghapus kelas ini secara permanen dari tabel database
+  const handleDeleteClass = () => {
+    Alert.alert(
+      "Hapus Kelas",
+      "Apakah Anda yakin ingin menghapus kelas yoga ini secara permanen?",
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Hapus",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const { error } = await supabase
+                .from("YogaClasses")
+                .delete()
+                .eq("id", selectedYoga.id);
+
+              if (error) throw error;
+
+              Alert.alert("Sukses", "Kelas Yoga berhasil dihapus!");
+              navigation.goBack(); // Kembali ke halaman profil setelah berhasil menghapus
+            } catch (error) {
+              console.error(error);
+              Alert.alert("Error", "Gagal menghapus data dari Supabase.");
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  if (!selectedYoga || !selectedYoga.id) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Data kelas tidak ditemukan.</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,9 +73,16 @@ const YogaDetail = ({ route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft color="#333" size={24} />
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", gap: 20 }}>
+        <View style={{ flexDirection: "row", gap: 20, alignItems: "center" }}>
+          {/* Tombol navigasi ke EditClassForm */}
+          <TouchableOpacity onPress={() => navigation.navigate("EditClassForm", { yogaClass: selectedYoga })}>
+            <Edit color="#4A7A64" size={22} />
+          </TouchableOpacity>
+          {/* Tombol Delete yang memicu fungsi hapus Supabase */}
+          <TouchableOpacity onPress={handleDeleteClass}>
+            <Trash2 color="#DC2626" size={22} />
+          </TouchableOpacity>
           <Share2 color="#333" size={24} />
-          <MoreVertical color="#333" size={24} />
         </View>
       </Animated.View>
 
@@ -45,18 +92,17 @@ const YogaDetail = ({ route }) => {
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
         )}
-
         contentContainerStyle={{ paddingTop: 52, paddingBottom: 100 }}
       >
         <Image style={styles.image} source={{ uri: selectedYoga.image }} contentFit="cover" />
         <View style={styles.contentPadding}>
-          <Text style={styles.category}>{selectedYoga.category}</Text>
+          <Text style={styles.category}>{selectedYoga.category || "General"}</Text>
           <Text style={styles.title}>{selectedYoga.title}</Text>
           
           <View style={styles.infoRow}>
             <View style={styles.infoItem}>
               <Clock size={18} color="#4A7A64" />
-              <Text style={styles.infoText}>{selectedYoga.duration}</Text>
+              <Text style={styles.infoText}>{selectedYoga.duration || "30 Mins"}</Text>
             </View>
             <View style={styles.infoItem}>
               <Flame size={18} color="#FF5733" />
@@ -64,8 +110,9 @@ const YogaDetail = ({ route }) => {
             </View>
           </View>
 
+          {/* Menampilkan konten/deskripsi dinamis langsung dari database Supabase */}
           <Text style={styles.description}>
-            Latihan {selectedYoga.title} ini dirancang khusus untuk meningkatkan ketenangan pikiran dan fleksibilitas tubuh Anda secara maksimal.
+            {selectedYoga.content || `Latihan ${selectedYoga.title} ini dirancang khusus untuk meningkatkan ketenangan pikiran dan fleksibilitas tubuh Anda secara maksimal.`}
           </Text>
         </View>
       </Animated.ScrollView>
@@ -84,7 +131,6 @@ export default YogaDetail;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFF" },
-  
   header: { 
     paddingHorizontal: 24, 
     justifyContent: "space-between", 
@@ -106,19 +152,7 @@ const styles = StyleSheet.create({
   infoItem: { flexDirection: "row", alignItems: "center", gap: 5 },
   infoText: { fontFamily: "Pjs-Medium", color: "#666" },
   description: { marginTop: 20, lineHeight: 22, color: "#444", fontFamily: "Pjs-Medium" },
-  
-  bottomBar: {
-    position: "absolute", 
-    bottom: 30, 
-    left: 24, 
-    right: 24, 
-    zIndex: 1000
-  },
-  buttonStart: { 
-    backgroundColor: "#4A7A64", 
-    padding: 18, 
-    borderRadius: 15, 
-    alignItems: "center" 
-  },
+  bottomBar: { position: "absolute", bottom: 30, left: 24, right: 24, zIndex: 1000 },
+  buttonStart: { backgroundColor: "#4A7A64", padding: 18, borderRadius: 15, alignItems: "center" },
   buttonText: { color: "#FFF", fontFamily: "Pjs-Bold", fontSize: 16 }
 });
